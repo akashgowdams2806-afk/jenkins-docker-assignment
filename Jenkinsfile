@@ -34,12 +34,13 @@ pipeline {
         }
 
         stage('Curl') {
-            steps {
-                sh 'curl http://localhost:3000/'
-                sh 'curl http://localhost:3000/health'
-                sh 'curl http://localhost:3000/api/tasks'
-            }
-        }
+    steps {
+        sh 'sleep 10'
+        sh 'curl http://localhost:3000/'
+        sh 'curl http://localhost:3000/health'
+        sh 'curl http://localhost:3000/api/tasks'
+    }
+}
 
         stage('Cleanup') {
             steps {
