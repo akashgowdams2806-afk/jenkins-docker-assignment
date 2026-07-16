@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         IMAGE_NAME = "task-tracker-app"
+        CONTAINER_NAME = "task-tracker"
+        APP_PORT = "3000"
         COMPOSE_FILE = "docker-compose.yml"
     }
 
@@ -29,24 +31,37 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker compose -f $COMPOSE_FILE up -d --build'
+                sh 'docker compose -f $COMPOSE_FILE down || true'
+                sh 'docker rm -f $CONTAINER_NAME || true'
+                sh 'docker compose -f $COMPOSE_FILE up -d'
             }
         }
 
         stage('Curl') {
             steps {
-                sh 'curl http://localhost:3000/'
-                sh 'curl http://localhost:3000/health'
-                sh 'curl http://localhost:3000/api/tasks'
+                sh 'curl http://localhost:$APP_PORT/'
+                sh 'curl http://localhost:$APP_PORT/health'
+                sh 'curl http://localhost:$APP_PORT/api/tasks'
             }
         }
 
         stage('Cleanup') {
             steps {
-                sh 'docker compose -f $COMPOSE_FILE down'
                 sh 'docker image prune -f'
                 cleanWs()
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+        always {
+            echo 'Pipeline execution finished.'
         }
     }
 }
