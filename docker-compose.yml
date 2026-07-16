@@ -1,6 +1,0 @@
-services:
-  task-tracker:
-    image: task-tracker-app
-    container_name: task-tracker
-    ports:
-      - "3000:3000"
